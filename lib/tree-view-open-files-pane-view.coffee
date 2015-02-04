@@ -59,6 +59,10 @@ class TreeViewOpenFilesPaneView
 					@updateTitle item
 
 				@paneSub.add titleSub
+				
+			item.on('modified-status-changed', ((e) =>
+				@updateTitle item))
+				
 			@items.push item: item, element: listItem
 			@updateTitle item
 
@@ -82,6 +86,13 @@ class TreeViewOpenFilesPaneView
 
 		if useLongTitle and item.getLongTitle?
 			title = item.getLongTitle()
+			
+		if item.modified?
+			item.modified = !item.modified
+			if item.modified
+				title = "[modified] "+title
+		else
+			item.modified = false
 
 		if entry = @entryForItem(item)
 			$(entry.element).find('.name').text title
