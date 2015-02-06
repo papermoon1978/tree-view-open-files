@@ -48,14 +48,14 @@ class TreeViewOpenFilesPaneView
 			$(closer).on 'click', =>
 				pane.destroyItem @entryForElement(listItem).item
 			listItem.appendChild closer
-			
+
 			spanModified = document.createElement('span')
-			spanModified.innerText=" * "
+			spanModified.classList.add('icon', 'icon-zap')
 			spanModified.classList.add('modified')
 			spanModified.style.display='none'
 			spanModified.style.color='#0680bd'
 			listItem.appendChild spanModified
-			
+
 			listItemName = document.createElement('span')
 			listItemName.classList.add('name', 'icon', 'icon-file-text')
 			listItemName.setAttribute('data-path', item.getPath?())
@@ -67,10 +67,12 @@ class TreeViewOpenFilesPaneView
 					@updateTitle item
 
 				@paneSub.add titleSub
-				
+
+			item.treeviewOpenFilesItemModified = false
+
 			item.on('modified-status-changed', ((e) =>
 				@updateModified item))
-				
+
 			@items.push item: item, element: listItem
 			@updateTitle item
 
@@ -81,17 +83,17 @@ class TreeViewOpenFilesPaneView
 			@removeEntry item
 
 		@paneSub.add pane.onDidDestroy => @paneSub.dispose()
-	
-	updateModified: (item) ->	
-		if item.modified?
-			item.modified = !item.modified
+
+	updateModified: (item) ->
+		if item.treeviewOpenFilesItemModified?
+			item.treeviewOpenFilesItemModified = !item.treeviewOpenFilesItemModified
 
 			if entry = @entryForItem(item)
-				if item.modified
+				if item.treeviewOpenFilesItemModified
 					$(entry.element).find('.modified').show()
 				else
 					$(entry.element).find('.modified').hide()
-	
+
 	updateTitle: (item, siblings=true, useLongTitle=false) ->
 		title = item.getTitle()
 
@@ -104,7 +106,7 @@ class TreeViewOpenFilesPaneView
 
 		if useLongTitle and item.getLongTitle?
 			title = item.getLongTitle()
-			
+
 		if entry = @entryForItem(item)
 			$(entry.element).find('.name').text title
 
